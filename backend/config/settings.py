@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-&%5a!0=u%!wb6ws!wk8yb7p--s$-!6ttqyc5w+ng!q570qdhp6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -143,5 +143,5 @@ CORS_ALLOWED_ORIGINS = [
 # Custom Environment Variables
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 FROM_EMAIL = os.getenv("FROM_EMAIL", "onboarding@resend.dev")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
-BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://admexo-assignment-q37j.vercel.app")
+BACKEND_URL = os.getenv("BACKEND_URL", "https://admexo-assignment.onrender.com")

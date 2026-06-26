@@ -36,7 +36,7 @@ class LeadListCreateAPIView(generics.ListCreateAPIView):
     def send_email(self, lead):
         api_key = os.environ.get('RESEND_API_KEY')
         from_email = os.environ.get('FROM_EMAIL', 'onboarding@resend.dev')
-        backend_url = os.environ.get('BACKEND_URL', 'http://127.0.0.1:8000')
+        backend_url = os.environ.get('BACKEND_URL', 'https://admexo-assignment.onrender.com')
         
         if not api_key:
             return False, "Resend API key is missing."
@@ -157,5 +157,5 @@ class TrackClickAPIView(APIView):
         except Lead.DoesNotExist:
             pass
             
-        frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+        frontend_url = os.environ.get('FRONTEND_URL', 'https://admexo-assignment-q37j.vercel.app')
         return redirect(f"{frontend_url}/thank-you")
