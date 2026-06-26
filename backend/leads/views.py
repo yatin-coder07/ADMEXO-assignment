@@ -1,5 +1,5 @@
 import os
-import requests
+from django.core.mail import EmailMultiAlternatives
 from datetime import datetime
 from django.utils import timezone
 from django.http import HttpResponse
@@ -34,12 +34,8 @@ class LeadListCreateAPIView(generics.ListCreateAPIView):
             return 'General Inquiry', 'Low'
 
     def send_email(self, lead):
-        api_key = os.environ.get('RESEND_API_KEY')
-        from_email = os.environ.get('FROM_EMAIL', 'onboarding@resend.dev')
+        from_email = os.environ.get('DEFAULT_FROM_EMAIL', 'yatins113@gmail.com')
         backend_url = os.environ.get('BACKEND_URL', 'https://admexo-assignment.onrender.com')
-        
-        if not api_key:
-            return False, "Resend API key is missing."
 
         tracking_pixel = f'<img src="{backend_url}/api/track/open/{lead.tracking_id}/" width="1" height="1" alt="" />'
         tracking_link = f'{backend_url}/api/track/click/{lead.tracking_id}/'
@@ -53,26 +49,18 @@ class LeadListCreateAPIView(generics.ListCreateAPIView):
         <p>Regards,<br/>Team</p>
         {tracking_pixel}
         """
-
-        headers = {
-            'Authorization': f'Bearer {api_key}',
-            'Content-Type': 'application/json'
-        }
         
-        payload = {
-            "from": from_email,
-            "to": [lead.email],
-            "subject": "Thank you for reaching out",
-            "html": html_content
-        }
+        text_content = f"Hi {lead.full_name},\n\nThank you for reaching out.\n\nWe received your requirement:\n\"{lead.requirement}\"\n\nLearn more: {tracking_link}\n\nRegards,\nTeam"
 
+        subject = "Thank you for reaching out"
+        
         try:
-            response = requests.post('https://api.resend.com/emails', json=payload, headers=headers)
-            if response.status_code == 200 or response.status_code == 201:
-                return True, "Email sent successfully."
-            else:
-                return False, f"Resend API error: {response.text}"
+            msg = EmailMultiAlternatives(subject, text_content, from_email, [lead.email])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send(fail_silently=False)
+            return True, "Email sent successfully."
         except Exception as e:
+            print(f"SMTP Email Error: {e}")
             return False, str(e)
 
     def perform_create(self, serializer):
